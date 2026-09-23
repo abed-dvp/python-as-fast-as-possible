@@ -1,12 +1,12 @@
 # 🐍 Python 101 — Learn Python As Fast As Possible
 
-A compact, hands-on guide to the core Python concepts you need to start writing real programs.
+A hands-on Python fundamentals repository with three ways to learn: an interactive browser Codelab, a complete README reference, and a practice notebook.
 
-This repository follows the learning sequence of Tech With Tim's **Python As Fast as Possible – Learn Python in ~75 Minutes**, while using independently written examples and modern Python 3 syntax.
+This repository follows the learning sequence of Tech With Tim's **Python As Fast as Possible – Learn Python in ~75 Minutes**, while using independently written explanations, examples, exercises, and modern Python 3 syntax.
 
-> 🎥 Source video: https://www.youtube.com/watch?v=VchuKL44s6E  
-> 🧪 Prefer a guided experience? Open the [`Abed Codelab`](./codelab/).  
-> 📓 Prefer practicing interactively? Open [`notebook.ipynb`](./notebook.ipynb).
+> 🚀 **Launch the interactive Codelab:** https://abed-dvp.github.io/python-as-fast-as-possible/  
+> 🎥 **Source video:** https://www.youtube.com/watch?v=VchuKL44s6E  
+> 📓 **Practice notebook:** [`notebook.ipynb`](./notebook.ipynb)
 
 ---
 
@@ -326,7 +326,7 @@ True
 
 ---
 
-## 9. 🔗 Boolean Logic / Chained Conditionals — `28:10`
+## 9. 🔗 Boolean Operators — `28:10`
 
 Use `and`, `or`, and `not` to combine boolean expressions.
 
@@ -1145,24 +1145,55 @@ print(f"Result: {doubled}")
 
 ---
 
+# 🧪 Interactive Codelab
+
+The live **Abed Codelab** turns the 25 topics into a guided practice experience:
+
+- editable Python exercises
+- real Python execution in the browser with Pyodide / WebAssembly
+- stdout and Python error output
+- automated **Check answer** validation
+- solutions, progress tracking, and light / dark mode
+- progress stored locally in the browser
+- no backend required
+
+Pyodide runtime files are bundled into the GitHub Pages artifact during deployment and served from the same `abed-dvp.github.io` origin.
+
+**Launch it:** https://abed-dvp.github.io/python-as-fast-as-possible/
+
+---
+
 # 📁 Repository Structure
 
 ```text
 python-as-fast-as-possible/
-├── README.md          # Complete tutorial / cheat sheet
-├── codelab/            # Guided Abed Codelab learning app
-├── notebook.ipynb     # Interactive practice notebook
-├── main.py            # Runnable refresher
-├── pyproject.toml     # Project configuration
+├── README.md                   # Complete tutorial / reference
+├── index.html                  # Redirect to the live Codelab
+├── codelab/
+│   ├── index.html              # Codelab UI
+│   ├── app.js                  # Navigation, execution, checks, progress
+│   ├── steps.js                # 25 lessons and exercise checks
+│   ├── styles.css              # Responsive light/dark UI
+│   └── README.md               # Codelab architecture and usage
+├── notebook.ipynb              # Interactive practice notebook
+├── main.py                     # Runnable Python refresher
+├── pyproject.toml              # Project configuration
+├── .github/workflows/pages.yml # GitHub Pages + Pyodide deployment
 ├── .python-version
 └── .gitignore
 ```
+
+> The `codelab/vendor/pyodide/` runtime directory is generated during the GitHub Pages build and is not committed to the repository.
 
 ---
 
 # ▶️ Run the Project
 
-Clone the repository:
+For the browser-based version, use the deployed Codelab:
+
+https://abed-dvp.github.io/python-as-fast-as-possible/
+
+For the local Python files, clone the repository:
 
 ```bash
 git clone https://github.com/abed-dvp/python-as-fast-as-possible.git
@@ -1200,12 +1231,15 @@ notebook.ipynb
 
 For each topic:
 
-1. Watch the matching section of the video.
-2. Read the short explanation in this README.
-3. Type the example yourself.
-4. Predict the output before running it.
-5. Change the values and test what happens.
-6. Re-create the concept later without looking.
+1. Open the matching step in the **Abed Codelab**.
+2. Read the short explanation and example.
+3. Write or modify the Python yourself.
+4. Run the code and inspect the real output.
+5. Use **Check answer** to validate the exercise.
+6. Watch the matching video section when you want more context.
+7. Re-create the concept later without looking.
+
+Use this README as a reference and cheat sheet; use the Codelab as the main hands-on learning experience.
 
 The goal is not to memorize syntax. The goal is to become comfortable enough with the syntax that you can use it while solving real problems.
 
@@ -1223,7 +1257,7 @@ The goal is not to memorize syntax. The goal is to become comfortable enough wit
 | 6 | Arithmetic Operators | 12:38 |
 | 7 | String Methods | 18:34 |
 | 8 | Comparison Operators | 22:19 |
-| 9 | Chained Conditionals | 28:10 |
+| 9 | Boolean Operators | 28:10 |
 | 10 | If / Elif / Else | 31:26 |
 | 11 | Lists & Tuples | 35:41 |
 | 12 | For Loops | 41:32 |
