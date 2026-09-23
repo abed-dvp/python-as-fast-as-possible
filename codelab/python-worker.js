@@ -6,8 +6,21 @@ let pyodide = null;
 
 async function boot() {
   try {
+    // Work around JSPI instability seen on some recent Chromium/Windows builds.
+    // This Codelab executes Python synchronously inside a dedicated Worker,
+    // so disabling JSPI does not block the page UI.
+    try {
+      if (typeof WebAssembly !== 'undefined' && WebAssembly.Suspending) {
+        delete WebAssembly.Suspending;
+        delete WebAssembly.promising;
+      }
+    } catch {}
+
     importScripts(PYODIDE_BASE + 'pyodide.js');
-    pyodide = await loadPyodide({ indexURL: PYODIDE_BASE });
+    pyodide = await loadPyodide({
+      indexURL: PYODIDE_BASE,
+      enableRunUntilComplete: false
+    });
 
     pyodide.setStdin({ error: true });
 
@@ -88,7 +101,7 @@ self.addEventListener('message', async function(event) {
     pyodide.globals.set('__abed_user_code', code);
     pyodide.globals.set('__abed_test_code', testCode || '');
 
-    const jsonResult = await pyodide.runPythonAsync(
+    const jsonResult = pyodide.runPython(
       'json.dumps(__abed_run(__abed_user_code, __abed_test_code))'
     );
 
