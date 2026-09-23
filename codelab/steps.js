@@ -16,7 +16,8 @@ window.CODELAB_STEPS = [
     "challenge": "Open a terminal and confirm your Python version. Then create a file named hello.py that prints Hello, Python!",
     "starter": "print(\"Hello, Python!\")",
     "solution": "print(\"Hello, Python!\")",
-    "takeaway": "Your environment is ready when Python 3 runs successfully from the terminal."
+    "takeaway": "Your environment is ready when Python 3 runs successfully from the terminal.",
+    "check": "assert \"Hello, Python!\" in __output__, \"Print Hello, Python! from your file.\""
   },
   {
     "id": 2,
@@ -34,7 +35,8 @@ window.CODELAB_STEPS = [
     "challenge": "Create one value of each core type and print both the value and its type.",
     "starter": "age = \nprice = \nlanguage = \nis_learning = \n\n# print each value and its type",
     "solution": "age = 30\nprice = 19.99\nlanguage = \"Python\"\nis_learning = True\n\nprint(age, type(age))\nprint(price, type(price))\nprint(language, type(language))\nprint(is_learning, type(is_learning))",
-    "takeaway": "A Python object always has a type, even though variables do not require type declarations."
+    "takeaway": "A Python object always has a type, even though variables do not require type declarations.",
+    "check": "assert isinstance(age, int), \"age should be an int\"\nassert isinstance(price, float), \"price should be a float\"\nassert isinstance(language, str), \"language should be a str\"\nassert isinstance(is_learning, bool), \"is_learning should be a bool\""
   },
   {
     "id": 3,
@@ -51,7 +53,8 @@ window.CODELAB_STEPS = [
     "challenge": "Print your name, city, and favorite language on one line separated by arrows.",
     "starter": "print()",
     "solution": "print(\"Abed\", \"Berlin\", \"Python\", sep=\" -> \")",
-    "takeaway": "print() is simple, but sep and end give you useful formatting control."
+    "takeaway": "print() is simple, but sep and end give you useful formatting control.",
+    "check": "assert __output__.count(\"->\") >= 2, \"Print three values separated by arrows (->).\""
   },
   {
     "id": 4,
@@ -68,7 +71,8 @@ window.CODELAB_STEPS = [
     "challenge": "Create a variable called skill_level, print it, then assign a different type to the same variable and print it again.",
     "starter": "skill_level = \nprint(skill_level)\n\nskill_level = \nprint(skill_level)",
     "solution": "skill_level = 2\nprint(skill_level)\n\nskill_level = \"beginner\"\nprint(skill_level)",
-    "takeaway": "The variable name is not locked to one type; it can reference another object later."
+    "takeaway": "The variable name is not locked to one type; it can reference another object later.",
+    "check": "assert \"skill_level\" in globals(), \"Create skill_level.\"\nassert isinstance(skill_level, str), \"Reassign skill_level to a different type, such as a string.\""
   },
   {
     "id": 5,
@@ -85,7 +89,8 @@ window.CODELAB_STEPS = [
     "challenge": "Convert the string \"42\" to an integer and the string \"3.5\" to a float, then add them.",
     "starter": "whole = \ndecimal = \nprint()",
     "solution": "whole = int(\"42\")\ndecimal = float(\"3.5\")\nprint(whole + decimal)",
-    "takeaway": "Convert input explicitly before doing numeric operations."
+    "takeaway": "Convert input explicitly before doing numeric operations.",
+    "check": "assert whole == 42, \"Convert '42' with int().\"\nassert decimal == 3.5, \"Convert '3.5' with float().\""
   },
   {
     "id": 6,
@@ -103,7 +108,8 @@ window.CODELAB_STEPS = [
     "challenge": "You have 125 minutes. Use // and % to calculate full hours and remaining minutes.",
     "starter": "minutes = 125\nhours = \nremaining = \nprint(hours, remaining)",
     "solution": "minutes = 125\nhours = minutes // 60\nremaining = minutes % 60\nprint(hours, remaining)",
-    "takeaway": "// and % are especially useful when splitting a quantity into groups and leftovers."
+    "takeaway": "// and % are especially useful when splitting a quantity into groups and leftovers.",
+    "check": "assert hours == 2, \"125 minutes contains 2 full hours.\"\nassert remaining == 5, \"The remaining minutes should be 5.\""
   },
   {
     "id": 7,
@@ -120,7 +126,8 @@ window.CODELAB_STEPS = [
     "challenge": "Clean the string \"  PYTHON  \" by removing outer spaces and converting it to lowercase.",
     "starter": "text = \"  PYTHON  \"\nclean = \nprint(clean)",
     "solution": "text = \"  PYTHON  \"\nclean = text.strip().lower()\nprint(clean)",
-    "takeaway": "String methods return new strings because strings themselves are immutable."
+    "takeaway": "String methods return new strings because strings themselves are immutable.",
+    "check": "assert clean == \"python\", \"Use strip() and lower() so clean equals 'python'.\""
   },
   {
     "id": 8,
@@ -137,7 +144,8 @@ window.CODELAB_STEPS = [
     "challenge": "Create a variable score = 82 and print whether it is at least 80.",
     "starter": "score = 82\nprint()",
     "solution": "score = 82\nprint(score >= 80)",
-    "takeaway": "Comparison expressions are the building blocks of conditions."
+    "takeaway": "Comparison expressions are the building blocks of conditions.",
+    "check": "assert score >= 80, \"Compare score with 80 using >=.\"\nassert __output__.strip() == \"True\", \"Print the boolean result.\""
   },
   {
     "id": 9,
@@ -154,7 +162,8 @@ window.CODELAB_STEPS = [
     "challenge": "A user may enter if they are at least 18 and have an invitation. Write the boolean expression.",
     "starter": "age = 21\nhas_invitation = True\ncan_enter = \nprint(can_enter)",
     "solution": "age = 21\nhas_invitation = True\ncan_enter = age >= 18 and has_invitation\nprint(can_enter)",
-    "takeaway": "Boolean operators let you express real decision rules from smaller conditions."
+    "takeaway": "Boolean operators let you express real decision rules from smaller conditions.",
+    "check": "assert can_enter is True, \"can_enter should combine age >= 18 and has_invitation with and.\""
   },
   {
     "id": 10,
@@ -172,7 +181,8 @@ window.CODELAB_STEPS = [
     "challenge": "Classify a score: 90+ = A, 80+ = B, otherwise C or below.",
     "starter": "score = 84\n\nif :\n    print(\"A\")\nelif :\n    print(\"B\")\nelse:\n    print(\"C or below\")",
     "solution": "score = 84\n\nif score >= 90:\n    print(\"A\")\nelif score >= 80:\n    print(\"B\")\nelse:\n    print(\"C or below\")",
-    "takeaway": "Order your conditions from the most specific/highest-priority case to the fallback."
+    "takeaway": "Order your conditions from the most specific/highest-priority case to the fallback.",
+    "check": "assert __output__.strip() == \"B\", \"For score 84, your conditional should print B.\""
   },
   {
     "id": 11,
@@ -190,7 +200,8 @@ window.CODELAB_STEPS = [
     "challenge": "Create a list of three skills, append one more skill, then print the first and last items.",
     "starter": "skills = []\n\n# append one skill\n\nprint()\nprint()",
     "solution": "skills = [\"Python\", \"SQL\", \"Git\"]\nskills.append(\"Pandas\")\n\nprint(skills[0])\nprint(skills[-1])",
-    "takeaway": "Choose a list when the collection may change; choose a tuple when it should stay fixed."
+    "takeaway": "Choose a list when the collection may change; choose a tuple when it should stay fixed.",
+    "check": "assert isinstance(skills, list), \"skills should be a list.\"\nassert len(skills) == 4, \"Start with three skills and append one more.\"\nassert len(__output__.strip().splitlines()) >= 2, \"Print the first and last items.\""
   },
   {
     "id": 12,
@@ -207,7 +218,8 @@ window.CODELAB_STEPS = [
     "challenge": "Loop over [2, 4, 6] and print the square of each number.",
     "starter": "numbers = [2, 4, 6]\n\nfor number in numbers:\n    print()",
     "solution": "numbers = [2, 4, 6]\n\nfor number in numbers:\n    print(number ** 2)",
-    "takeaway": "Use for when you want to process each item in an iterable."
+    "takeaway": "Use for when you want to process each item in an iterable.",
+    "check": "assert __output__.strip().splitlines() == [\"4\", \"16\", \"36\"], \"Print the squares of 2, 4, and 6.\""
   },
   {
     "id": 13,
@@ -224,7 +236,8 @@ window.CODELAB_STEPS = [
     "challenge": "Start at 3 and count down to 1 using a while loop.",
     "starter": "count = 3\n\nwhile :\n    print(count)\n    ",
     "solution": "count = 3\n\nwhile count > 0:\n    print(count)\n    count -= 1",
-    "takeaway": "Use while when repetition depends on a changing condition rather than a fixed iterable."
+    "takeaway": "Use while when repetition depends on a changing condition rather than a fixed iterable.",
+    "check": "assert __output__.strip().splitlines() == [\"3\", \"2\", \"1\"], \"Count down from 3 to 1.\""
   },
   {
     "id": 14,
@@ -242,7 +255,8 @@ window.CODELAB_STEPS = [
     "challenge": "From the string \"Python\", extract \"yth\" and then reverse the whole string.",
     "starter": "text = \"Python\"\nprint()\nprint()",
     "solution": "text = \"Python\"\nprint(text[1:4])\nprint(text[::-1])",
-    "takeaway": "Think of slicing as sequence[start:stop:step], remembering that stop is excluded."
+    "takeaway": "Think of slicing as sequence[start:stop:step], remembering that stop is excluded.",
+    "check": "assert __output__.strip().splitlines() == [\"yth\", \"nohtyP\"], \"Print 'yth' and then the reversed string.\""
   },
   {
     "id": 15,
@@ -260,7 +274,8 @@ window.CODELAB_STEPS = [
     "challenge": "Find the common skills between two sets.",
     "starter": "a = {\"Python\", \"SQL\", \"Git\"}\nb = {\"Python\", \"Pandas\", \"Git\"}\ncommon = \nprint(common)",
     "solution": "a = {\"Python\", \"SQL\", \"Git\"}\nb = {\"Python\", \"Pandas\", \"Git\"}\ncommon = a & b\nprint(common)",
-    "takeaway": "Sets are ideal for uniqueness, membership, unions, and intersections."
+    "takeaway": "Sets are ideal for uniqueness, membership, unions, and intersections.",
+    "check": "assert common == {\"Python\", \"Git\"}, \"Use set intersection to find the shared skills.\""
   },
   {
     "id": 16,
@@ -278,7 +293,8 @@ window.CODELAB_STEPS = [
     "challenge": "Create a dictionary with name, city, and skill. Update the skill and print all key-value pairs.",
     "starter": "profile = {\n    \"name\": \"Abed\",\n    \"city\": \"Berlin\",\n    \"skill\": \"SQL\"\n}\n\n# update skill\n\nfor key, value in profile.items():\n    print(key, value)",
     "solution": "profile = {\n    \"name\": \"Abed\",\n    \"city\": \"Berlin\",\n    \"skill\": \"SQL\"\n}\n\nprofile[\"skill\"] = \"Python\"\n\nfor key, value in profile.items():\n    print(key, value)",
-    "takeaway": "Use dictionaries when values have meaningful labels rather than only numeric positions."
+    "takeaway": "Use dictionaries when values have meaningful labels rather than only numeric positions.",
+    "check": "assert profile[\"skill\"] != \"SQL\", \"Update the skill value.\"\nassert {\"name\", \"city\", \"skill\"} <= set(profile), \"Keep name, city, and skill keys.\""
   },
   {
     "id": 17,
@@ -295,7 +311,8 @@ window.CODELAB_STEPS = [
     "challenge": "Create a list containing the uppercase version of each language.",
     "starter": "languages = [\"python\", \"sql\", \"git\"]\nupper = \nprint(upper)",
     "solution": "languages = [\"python\", \"sql\", \"git\"]\nupper = [language.upper() for language in languages]\nprint(upper)",
-    "takeaway": "A comprehension is useful when it expresses a simple transformation or filter clearly."
+    "takeaway": "A comprehension is useful when it expresses a simple transformation or filter clearly.",
+    "check": "assert upper == [\"PYTHON\", \"SQL\", \"GIT\"], \"Create uppercase values with a list comprehension.\""
   },
   {
     "id": 18,
@@ -313,7 +330,8 @@ window.CODELAB_STEPS = [
     "challenge": "Write a function total_price(price, quantity) that returns price * quantity.",
     "starter": "def total_price(price, quantity):\n    \n\nprint(total_price(12.5, 4))",
     "solution": "def total_price(price, quantity):\n    return price * quantity\n\nprint(total_price(12.5, 4))",
-    "takeaway": "Functions make logic reusable, testable, and easier to understand."
+    "takeaway": "Functions make logic reusable, testable, and easier to understand.",
+    "check": "assert callable(total_price), \"Define total_price().\"\nassert total_price(3, 4) == 12, \"Return price * quantity.\""
   },
   {
     "id": 19,
@@ -331,7 +349,8 @@ window.CODELAB_STEPS = [
     "challenge": "Unpack the list [4, 5] into a two-parameter add() function.",
     "starter": "def add(x, y):\n    return x + y\n\nnumbers = [4, 5]\nprint()",
     "solution": "def add(x, y):\n    return x + y\n\nnumbers = [4, 5]\nprint(add(*numbers))",
-    "takeaway": "Packing and unpacking let functions work flexibly with groups of arguments."
+    "takeaway": "Packing and unpacking let functions work flexibly with groups of arguments.",
+    "check": "assert add(*numbers) == 9, \"Call add() by unpacking numbers with *.\""
   },
   {
     "id": 20,
@@ -348,7 +367,8 @@ window.CODELAB_STEPS = [
     "challenge": "Rewrite a counter function without global by returning the new value instead.",
     "starter": "def increment(counter):\n    \n\ncounter = 0\ncounter = increment(counter)\nprint(counter)",
     "solution": "def increment(counter):\n    return counter + 1\n\ncounter = 0\ncounter = increment(counter)\nprint(counter)",
-    "takeaway": "Understand global, but prefer explicit inputs and return values for cleaner code."
+    "takeaway": "Understand global, but prefer explicit inputs and return values for cleaner code.",
+    "check": "assert increment(4) == 5, \"increment() should return counter + 1.\""
   },
   {
     "id": 21,
@@ -366,7 +386,8 @@ window.CODELAB_STEPS = [
     "challenge": "Predict which exception is raised by 10 / 0.",
     "starter": "result = 10 / 0",
     "solution": "# This raises ZeroDivisionError\nresult = 10 / 0",
-    "takeaway": "Knowing common exception types helps you diagnose and handle expected failure cases."
+    "takeaway": "Knowing common exception types helps you diagnose and handle expected failure cases.",
+    "expectedError": "ZeroDivisionError"
   },
   {
     "id": 22,
@@ -384,7 +405,8 @@ window.CODELAB_STEPS = [
     "challenge": "Safely divide two numbers and return None when the denominator is zero.",
     "starter": "def safe_divide(a, b):\n    try:\n        \n    except :\n        ",
     "solution": "def safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        return None",
-    "takeaway": "Handle only errors you expect and know how to recover from."
+    "takeaway": "Handle only errors you expect and know how to recover from.",
+    "check": "assert safe_divide(10, 2) == 5, \"Return normal division when b is not zero.\"\nassert safe_divide(10, 0) is None, \"Return None for division by zero.\""
   },
   {
     "id": 23,
@@ -401,7 +423,8 @@ window.CODELAB_STEPS = [
     "challenge": "Create a lambda that returns the last character of a string.",
     "starter": "last_character = \nprint(last_character(\"Python\"))",
     "solution": "last_character = lambda text: text[-1]\nprint(last_character(\"Python\"))",
-    "takeaway": "Lambda is useful for short throwaway functions, especially when another function expects a callable."
+    "takeaway": "Lambda is useful for short throwaway functions, especially when another function expects a callable.",
+    "check": "assert last_character(\"Python\") == \"n\", \"Your lambda should return the last character.\""
   },
   {
     "id": 24,
@@ -418,7 +441,8 @@ window.CODELAB_STEPS = [
     "challenge": "Use a list comprehension to produce the same even-number result without filter().",
     "starter": "numbers = [1, 2, 3, 4, 5, 6]\neven = \nprint(even)",
     "solution": "numbers = [1, 2, 3, 4, 5, 6]\neven = [number for number in numbers if number % 2 == 0]\nprint(even)",
-    "takeaway": "Recognize map() and filter(), but choose comprehensions when they communicate the intent more clearly."
+    "takeaway": "Recognize map() and filter(), but choose comprehensions when they communicate the intent more clearly.",
+    "check": "assert even == [2, 4, 6], \"Build [2, 4, 6] with a list comprehension.\""
   },
   {
     "id": 25,
@@ -435,6 +459,7 @@ window.CODELAB_STEPS = [
     "challenge": "Print a sentence showing a product name, quantity, price, and total price using one f-string.",
     "starter": "product = \"Book\"\nquantity = 3\nprice = 12.5\n\nprint()",
     "solution": "product = \"Book\"\nquantity = 3\nprice = 12.5\n\nprint(f\"{quantity} x {product} at €{price:.2f} = €{quantity * price:.2f}\")",
-    "takeaway": "Use f-strings for clear, concise string interpolation and formatting."
+    "takeaway": "Use f-strings for clear, concise string interpolation and formatting.",
+    "check": "assert \"€37.50\" in __output__, \"Print the total price (3 × €12.50 = €37.50) using an f-string.\""
   }
 ];
