@@ -67,9 +67,10 @@ function initPythonWorker() {
     if (data.type === 'boot-error') {
       pythonReady = false;
       els.runtimeDot.className = 'runtime-dot error';
-      els.runtimeText.textContent = 'Python runtime failed to load';
+      const detail = data.error || 'Unable to load Python.';
+      els.runtimeText.textContent = 'Python runtime failed to load — ' + detail;
       els.executionState.textContent = 'Runtime error';
-      els.runOutput.textContent = data.error || 'Unable to load Python.';
+      els.runOutput.textContent = detail;
       els.runOutput.classList.add('error-output');
       return;
     }
@@ -85,9 +86,10 @@ function initPythonWorker() {
   pythonWorker.addEventListener('error', function(event) {
     pythonReady = false;
     els.runtimeDot.className = 'runtime-dot error';
-    els.runtimeText.textContent = 'Python runtime worker failed';
+    const detail = event.message || 'Python worker error.';
+    els.runtimeText.textContent = 'Python runtime worker failed — ' + detail;
     els.executionState.textContent = 'Worker error';
-    els.runOutput.textContent = event.message || 'Python worker error.';
+    els.runOutput.textContent = detail;
     els.runOutput.classList.add('error-output');
   });
 }
