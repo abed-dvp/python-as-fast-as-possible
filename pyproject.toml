@@ -1,7 +1,7 @@
 [project]
 name = "python-as-fast-as-possible"
 version = "0.1.0"
-description = "Hands-on Python fundamentals tutorial based on the topic sequence of Tech With Tim's Python speed course."
+description = "Interactive Python fundamentals tutorial with a browser-based Pyodide Codelab, notebook, and reference guide."
 requires-python = ">=3.11"
 dependencies = []
 
