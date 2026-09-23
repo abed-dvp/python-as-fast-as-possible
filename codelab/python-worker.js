@@ -1,6 +1,4 @@
-import { loadPyodide } from './vendor/pyodide/pyodide.mjs';
-
-const PYODIDE_BASE = './vendor/pyodide/';
+const PYODIDE_BASE = new URL('./vendor/pyodide/', self.location.href).href;
 
 let pyodide = null;
 
@@ -15,6 +13,9 @@ async function boot() {
         delete WebAssembly.promising;
       }
     } catch {}
+
+    const moduleURL = new URL('./vendor/pyodide/pyodide.mjs', self.location.href).href;
+    const { loadPyodide } = await import(moduleURL);
 
     pyodide = await loadPyodide({
       indexURL: PYODIDE_BASE,
