@@ -1,4 +1,4 @@
-'use strict';
+import { loadPyodide } from './vendor/pyodide/pyodide.mjs';
 
 const PYODIDE_BASE = './vendor/pyodide/';
 
@@ -16,7 +16,6 @@ async function boot() {
       }
     } catch {}
 
-    importScripts(PYODIDE_BASE + 'pyodide.js');
     pyodide = await loadPyodide({
       indexURL: PYODIDE_BASE,
       enableRunUntilComplete: false
