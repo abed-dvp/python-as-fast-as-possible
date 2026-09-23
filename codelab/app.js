@@ -48,7 +48,7 @@ const els = {
 };
 
 function initPythonWorker() {
-  pythonWorker = new Worker('./python-worker.js');
+  pythonWorker = new Worker('./python-worker.js?v=20260923-2');
 
   pythonWorker.addEventListener('message', function(event) {
     const data = event.data || {};
