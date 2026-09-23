@@ -7,10 +7,8 @@ const themeKey = 'abed-codelab-theme';
 
 let currentIndex = 0;
 let state = loadState();
-let pythonWorker = null;
+let pyodide = null;
 let pythonReady = false;
-let requestCounter = 0;
-const pendingRuns = new Map();
 
 const els = {
   sidebar: document.getElementById('sidebar'),
@@ -47,70 +45,119 @@ const els = {
   themeButton: document.getElementById('themeButton')
 };
 
-function initPythonWorker() {
-  pythonWorker = new Worker('./python-worker.js?v=20260923-4', { type: 'module' });
+const PYTHON_HELPER = `
+import ast
+import contextlib
+import io
+import json
+import traceback
 
-  pythonWorker.addEventListener('message', function(event) {
-    const data = event.data || {};
+def __abed_run(code, test_code=""):
+    namespace = {"__name__": "__main__"}
+    stdout = io.StringIO()
+    error_type = None
+    error_text = ""
+    test_error = ""
 
-    if (data.type === 'ready') {
-      pythonReady = true;
-      els.runtimeDot.className = 'runtime-dot ready';
-      els.runtimeText.textContent = 'Python ' + data.version + ' ready in browser';
-      els.executionState.textContent = 'Ready';
-      els.runOutput.textContent = 'Python is ready. Run your code.';
-      els.runPython.disabled = false;
-      els.checkAnswer.disabled = false;
-      return;
+    try:
+        tree = ast.parse(code, filename="<learner>", mode="exec")
+
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stdout):
+            if tree.body and isinstance(tree.body[-1], ast.Expr):
+                last_expr = tree.body.pop()
+
+                if tree.body:
+                    exec(compile(tree, "<learner>", "exec"), namespace)
+
+                value = eval(
+                    compile(ast.Expression(last_expr.value), "<learner>", "eval"),
+                    namespace,
+                )
+
+                if value is not None:
+                    print(repr(value))
+            else:
+                exec(compile(tree, "<learner>", "exec"), namespace)
+
+    except BaseException as exc:
+        error_type = type(exc).__name__
+        error_text = "".join(
+            traceback.format_exception_only(type(exc), exc)
+        ).strip()
+
+    namespace["__output__"] = stdout.getvalue()
+
+    if test_code and error_type is None:
+        try:
+            exec(compile(test_code, "<checks>", "exec"), namespace)
+        except BaseException as exc:
+            test_error = "".join(
+                traceback.format_exception_only(type(exc), exc)
+            ).strip()
+
+    return {
+        "output": stdout.getvalue(),
+        "error_type": error_type,
+        "error": error_text,
+        "test_error": test_error,
+    }
+`;
+
+async function initPythonRuntime() {
+  try {
+    if (typeof window.loadPyodide !== 'function') {
+      throw new Error('pyodide.js did not load.');
     }
 
-    if (data.type === 'boot-error') {
-      pythonReady = false;
-      els.runtimeDot.className = 'runtime-dot error';
-      const detail = data.error || 'Unable to load Python.';
-      els.runtimeText.textContent = 'Python runtime failed to load — ' + detail;
-      els.executionState.textContent = 'Runtime error';
-      els.runOutput.textContent = detail;
-      els.runOutput.classList.add('error-output');
-      return;
-    }
+    els.runtimeText.textContent = 'Loading Python runtime…';
+    els.executionState.textContent = 'Loading Python…';
 
-    if (data.type === 'result' || data.type === 'worker-error') {
-      const pending = pendingRuns.get(data.requestId);
-      if (!pending) return;
-      pendingRuns.delete(data.requestId);
-      pending.resolve(data);
-    }
-  });
+    pyodide = await window.loadPyodide({
+      indexURL: './vendor/pyodide/'
+    });
 
-  pythonWorker.addEventListener('error', function(event) {
+    pyodide.setStdin({ error: true });
+    pyodide.runPython(PYTHON_HELPER);
+
+    const version = pyodide.runPython('import sys; sys.version.split()[0]');
+
+    pythonReady = true;
+    els.runtimeDot.className = 'runtime-dot ready';
+    els.runtimeText.textContent = 'Python ' + String(version) + ' ready in browser';
+    els.executionState.textContent = 'Ready';
+    els.runOutput.textContent = 'Python is ready. Run your code.';
+    els.runPython.disabled = false;
+    els.checkAnswer.disabled = false;
+  } catch (error) {
     pythonReady = false;
+    const detail = error && error.message ? error.message : String(error);
     els.runtimeDot.className = 'runtime-dot error';
-    const detail = event.message || 'Python worker error.';
-    els.runtimeText.textContent = 'Python runtime worker failed — ' + detail;
-    els.executionState.textContent = 'Worker error';
+    els.runtimeText.textContent = 'Python runtime failed to load — ' + detail;
+    els.executionState.textContent = 'Runtime error';
     els.runOutput.textContent = detail;
     els.runOutput.classList.add('error-output');
-  });
+  }
 }
 
-function executePython(code, testCode) {
-  return new Promise(function(resolve, reject) {
-    if (!pythonReady || !pythonWorker) {
-      reject(new Error('Python runtime is still loading.'));
-      return;
-    }
+async function executePython(code, testCode) {
+  if (!pythonReady || !pyodide) {
+    throw new Error('Python runtime is still loading.');
+  }
 
-    const requestId = ++requestCounter;
-    pendingRuns.set(requestId, { resolve, reject });
+  pyodide.globals.set('__abed_user_code', code);
+  pyodide.globals.set('__abed_test_code', testCode || '');
 
-    pythonWorker.postMessage({
-      type: 'execute',
-      requestId,
-      code,
-      testCode: testCode || ''
-    });
-  });
+  try {
+    const jsonResult = pyodide.runPython(
+      'json.dumps(__abed_run(__abed_user_code, __abed_test_code))'
+    );
+    return JSON.parse(String(jsonResult));
+  } finally {
+    try {
+      pyodide.globals.delete('__abed_user_code');
+      pyodide.globals.delete('__abed_test_code');
+    } catch {}
+  }
 }
 
 function setRunning(isRunning, label) {
@@ -156,13 +203,16 @@ function secondsFromTimestamp(value) {
 
 function renderNav() {
   els.stepNav.innerHTML = '';
+
   steps.forEach(function(step, index) {
     const button = document.createElement('button');
     button.className = 'step-link';
+
     if (index === currentIndex) button.classList.add('active');
     if (state.completed[step.id]) button.classList.add('complete');
 
     const marker = state.completed[step.id] ? '✓' : String(step.id);
+
     button.innerHTML =
       '<span class="step-index">' + marker + '</span>' +
       '<span class="step-title">' + escapeHtml(step.title) + '</span>' +
@@ -182,6 +232,7 @@ function renderNav() {
 
 function renderLesson() {
   const step = steps[currentIndex];
+
   els.stepNumber.textContent = 'Step ' + step.id + ' of ' + steps.length;
   els.videoTime.textContent = 'Video ' + step.time + ' ↗';
   els.videoTime.href = videoBase + secondsFromTimestamp(step.time) + 's';
@@ -199,8 +250,7 @@ function renderLesson() {
   els.expectedOutput.textContent = step.output;
   els.challengeText.textContent = step.challenge;
   els.solutionCode.textContent = step.solution;
-  els.takeawayText = document.getElementById('takeawayText');
-  els.takeawayText.textContent = step.takeaway;
+  document.getElementById('takeawayText').textContent = step.takeaway;
 
   const saved = state.code[step.id];
   els.starterCode.value = typeof saved === 'string' ? saved : step.starter;
@@ -208,8 +258,11 @@ function renderLesson() {
   els.solutionPanel.hidden = true;
   els.solutionButton.textContent = 'Show solution';
   clearFeedback();
+
   els.runOutput.classList.remove('error-output');
-  els.runOutput.textContent = pythonReady ? 'Run your Python code to see the output.' : 'Python runtime is loading…';
+  els.runOutput.textContent = pythonReady
+    ? 'Run your Python code to see the output.'
+    : 'Python runtime is loading…';
   els.executionState.textContent = pythonReady ? 'Ready' : 'Loading Python…';
 
   els.prevButton.disabled = currentIndex === 0;
@@ -221,10 +274,14 @@ function renderLesson() {
 }
 
 function renderProgress() {
-  const completed = steps.filter(function(step) { return state.completed[step.id]; }).length;
+  const completed = steps.filter(function(step) {
+    return state.completed[step.id];
+  }).length;
+
   const percent = Math.round((completed / steps.length) * 100);
   els.progressBar.style.width = percent + '%';
-  els.progressText.textContent = completed + ' of ' + steps.length + ' complete · ' + percent + '%';
+  els.progressText.textContent =
+    completed + ' of ' + steps.length + ' complete · ' + percent + '%';
 }
 
 function render() {
@@ -257,11 +314,12 @@ els.runPython.addEventListener('click', async function() {
   els.runOutput.classList.remove('error-output');
   els.runOutput.textContent = 'Running Python…';
 
-  try {
-    const response = await executePython(els.starterCode.value, '');
-    if (response.type === 'worker-error') throw new Error(response.error);
+  await new Promise(function(resolve) {
+    requestAnimationFrame(resolve);
+  });
 
-    const result = response.result;
+  try {
+    const result = await executePython(els.starterCode.value, '');
     els.runOutput.textContent = formatExecution(result);
     els.runOutput.classList.toggle('error-output', Boolean(result.error));
     els.executionState.textContent = result.error ? 'Finished with error' : 'Finished';
@@ -276,17 +334,19 @@ els.runPython.addEventListener('click', async function() {
 
 els.checkAnswer.addEventListener('click', async function() {
   const step = steps[currentIndex];
+
   clearFeedback();
   saveCurrentCode();
   setRunning(true, 'Checking…');
   els.runOutput.classList.remove('error-output');
   els.runOutput.textContent = 'Running Python and checking your answer…';
 
-  try {
-    const response = await executePython(els.starterCode.value, step.check || '');
-    if (response.type === 'worker-error') throw new Error(response.error);
+  await new Promise(function(resolve) {
+    requestAnimationFrame(resolve);
+  });
 
-    const result = response.result;
+  try {
+    const result = await executePython(els.starterCode.value, step.check || '');
     els.runOutput.textContent = formatExecution(result);
     els.runOutput.classList.toggle('error-output', Boolean(result.error));
 
@@ -297,11 +357,15 @@ els.checkAnswer.addEventListener('click', async function() {
       passed = result.error_type === step.expectedError;
       feedback = passed
         ? 'Correct — your code raised ' + step.expectedError + '.'
-        : 'Not yet — expected ' + step.expectedError + ', but got ' + (result.error_type || 'no error') + '.';
+        : 'Not yet — expected ' + step.expectedError + ', but got ' +
+          (result.error_type || 'no error') + '.';
     } else if (result.error) {
-      feedback = 'Your code raised ' + result.error_type + '. Fix the error and try again.';
+      feedback =
+        'Your code raised ' + result.error_type + '. Fix the error and try again.';
     } else if (result.test_error) {
-      feedback = result.test_error.replace(/^AssertionError:\s*/, '') || 'The result does not pass the exercise checks yet.';
+      feedback =
+        result.test_error.replace(/^AssertionError:\s*/, '') ||
+        'The result does not pass the exercise checks yet.';
     } else if (step.check) {
       passed = true;
       feedback = 'Correct — your code passes the checks.';
@@ -311,7 +375,8 @@ els.checkAnswer.addEventListener('click', async function() {
     }
 
     els.checkFeedback.hidden = false;
-    els.checkFeedback.className = 'check-feedback ' + (passed ? 'success' : 'failure');
+    els.checkFeedback.className =
+      'check-feedback ' + (passed ? 'success' : 'failure');
     els.checkFeedback.textContent = feedback;
     els.executionState.textContent = passed ? 'Check passed' : 'Check failed';
 
@@ -335,7 +400,9 @@ els.checkAnswer.addEventListener('click', async function() {
 els.clearOutput.addEventListener('click', function() {
   clearFeedback();
   els.runOutput.classList.remove('error-output');
-  els.runOutput.textContent = pythonReady ? 'Output cleared. Run your code again.' : 'Python runtime is loading…';
+  els.runOutput.textContent = pythonReady
+    ? 'Output cleared. Run your code again.'
+    : 'Python runtime is loading…';
   els.executionState.textContent = pythonReady ? 'Ready' : 'Loading Python…';
 });
 
@@ -376,8 +443,12 @@ els.completeButton.addEventListener('click', function() {
 });
 
 els.resetProgress.addEventListener('click', function() {
-  const confirmed = window.confirm('Reset completion progress and practice code for all 25 steps?');
+  const confirmed = window.confirm(
+    'Reset completion progress and practice code for all 25 steps?'
+  );
+
   if (!confirmed) return;
+
   state = { completed: {}, code: {} };
   saveState();
   render();
@@ -390,13 +461,17 @@ els.menuButton.addEventListener('click', function() {
 document.addEventListener('click', function(event) {
   const copy = event.target.closest('[data-copy]');
   if (!copy) return;
+
   const target = document.getElementById(copy.getAttribute('data-copy'));
   if (!target) return;
 
   navigator.clipboard.writeText(target.textContent).then(function() {
     const original = copy.textContent;
     copy.textContent = 'Copied';
-    setTimeout(function() { copy.textContent = original; }, 900);
+
+    setTimeout(function() {
+      copy.textContent = original;
+    }, 900);
   });
 });
 
@@ -406,16 +481,22 @@ function applyTheme(theme) {
 }
 
 const savedTheme = localStorage.getItem(themeKey);
+
 if (savedTheme) {
   applyTheme(savedTheme);
-} else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+} else if (
+  window.matchMedia &&
+  window.matchMedia('(prefers-color-scheme: dark)').matches
+) {
   applyTheme('dark');
 }
 
 els.themeButton.addEventListener('click', function() {
-  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const current =
+    document.documentElement.getAttribute('data-theme') || 'light';
+
   applyTheme(current === 'dark' ? 'light' : 'dark');
 });
 
-initPythonWorker();
 render();
+initPythonRuntime();
