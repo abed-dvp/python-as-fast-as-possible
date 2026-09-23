@@ -76,11 +76,32 @@
             </div>
           </div>
           <p id="challengeText"></p>
-          <textarea id="starterCode" spellcheck="false" aria-label="Practice code"></textarea>
+          <div class="runtime-status" id="runtimeStatus" role="status" aria-live="polite">
+            <span class="runtime-dot loading" id="runtimeDot"></span>
+            <span id="runtimeText">Loading Python runtime…</span>
+          </div>
+
+          <textarea id="starterCode" spellcheck="false" aria-label="Practice Python code"></textarea>
+
           <div class="try-actions">
+            <button id="runPython" class="primary-button" disabled>▶ Run Python</button>
+            <button id="checkAnswer" class="check-button" disabled>✓ Check answer</button>
             <button id="resetCode" class="secondary-button">Reset code</button>
             <button id="solutionButton" class="secondary-button">Show solution</button>
           </div>
+
+          <div class="run-panel" id="runPanel" aria-live="polite">
+            <div class="run-panel-head">
+              <div>
+                <span class="terminal-label">PYTHON OUTPUT</span>
+                <span class="execution-state" id="executionState">Ready when Python loads</span>
+              </div>
+              <button id="clearOutput" class="text-button">Clear</button>
+            </div>
+            <pre class="terminal"><code id="runOutput">Python runtime is loading…</code></pre>
+            <div id="checkFeedback" class="check-feedback" hidden></div>
+          </div>
+
           <div id="solutionPanel" class="solution-panel" hidden>
             <div class="section-head">
               <strong>One possible solution</strong>
