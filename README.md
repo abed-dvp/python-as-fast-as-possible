@@ -5,6 +5,7 @@ A compact, hands-on guide to the core Python concepts you need to start writing 
 This repository follows the learning sequence of Tech With Tim's **Python As Fast as Possible – Learn Python in ~75 Minutes**, while using independently written examples and modern Python 3 syntax.
 
 > 🎥 Source video: https://www.youtube.com/watch?v=VchuKL44s6E  
+> 🧪 Prefer a guided experience? Open the [`Abed Codelab`](./codelab/).  
 > 📓 Prefer practicing interactively? Open [`notebook.ipynb`](./notebook.ipynb).
 
 ---
@@ -1149,6 +1150,7 @@ print(f"Result: {doubled}")
 ```text
 python-as-fast-as-possible/
 ├── README.md          # Complete tutorial / cheat sheet
+├── codelab/            # Guided Abed Codelab learning app
 ├── notebook.ipynb     # Interactive practice notebook
 ├── main.py            # Runnable refresher
 ├── pyproject.toml     # Project configuration
